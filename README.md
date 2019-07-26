@@ -6,11 +6,9 @@
 ``` bash
 $ git clone https://github.com/fuurin/tic-tac-toe
 $ cd tic-tac-toe
-$ cd server
 $ python -m venv .venv
 $ source .venv/bin/activate もしくは .venv\\Scripts\\activate
 $ pip install -r requirements.txt
-$ cd ..
 $ python -m server.app
 ```
 これでサーバが起動  
