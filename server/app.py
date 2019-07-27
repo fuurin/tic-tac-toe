@@ -1,18 +1,19 @@
 from flask import Flask, request, jsonify
-from .ttt.board import GameState, Move, Point
+from flask_cors import CORS
+from .ttt.board import Board, GameState, Move, Point
 from .ttt.types import Player
-from .ttt.utils import CHAR_TO_STONE
+from .ttt.utils import CHAR_TO_STONE, board_from_chars
 from .ttt.utils import point_from_coords, board_array
 from .ttt.agent import MinimaxAgent
+import json
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 app.config["JSON_SORT_KEYS"] = False
+CORS(app)
 
 game = None
 bot = None
-
-
 
 @app.route('/')
 def init():
@@ -33,7 +34,8 @@ def init():
     if first == "o":
         move = bot.select_move(game)
         game = game.apply_move(move)
-        result["response"] = move.point
+        response = {"row": move.point.row, "col": move.point.col}
+        result["response"] = response
 
     result["board"] = board_array(game.board)
 
@@ -71,8 +73,12 @@ def move():
         result["message"] = "盤上にあるマスを指定してください。"
         return jsonify(result)
     
+    # import pdb; pdb.set_trace()
+    
     if game.board.get(point) is not None:
         result["message"] = "そのマスはすでに着手済みです．"
+        result["board"] = board_array(game.board)
+        result["point"] = {"row": point.row, "col": point.col}
         return jsonify(result)
 
 
@@ -87,7 +93,8 @@ def move():
     if not game.is_over():
         move = bot.select_move(game)
         game = game.apply_move(move)
-        result["response"] = move.point
+        response = {"row": move.point.row, "col": move.point.col}
+        result["response"] = response
     else:
         result["winner"] = game.winner()
 
@@ -96,7 +103,45 @@ def move():
 
     return jsonify(result)
 
+@app.route("/bot")
+def bot():
+    result = {"winner": None, "response": None, "valid": False}
+    
+    board = request.args["board"]
+    if not board:
+        result['message'] = "boardがありません"
+        return jsonify(result)
+    
+    board = json.loads(board)
+    result["response"] = {"board": board}
 
+    board = board_from_chars(board)    
+    game = GameState(board, Player.o, None)
+
+    if game.is_over():
+        result["winner"] = game.winner()
+    else:
+        bot = MinimaxAgent()
+        move = bot.select_move(game)
+        game.apply_move(move)
+        if game.is_over():
+            result["winner"] = game.winner()
+        response = {
+            "row": move.point.row, 
+            "col": move.point.col,
+            "board": board_array(game.board)
+        }
+        result["response"] = response
+
+    return jsonify(result)
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({'error': 'Not found'}, 404)
 
 if __name__ == "__main__":
+    # debug=Falseにすると意図しないアクセスが発生
+    # おそらくキャッシュ読み込みがかかる
+    # OC用なのでとりあえずdebug=Trueのままにしよう
     app.run(debug=True)

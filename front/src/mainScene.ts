@@ -1,19 +1,25 @@
 import "phaser"
+import { TTT } from "./ttt";
 
+const BASE_TTT_URL: string = "http://127.0.0.1:5000";
 const BOX_SIZE: number = 130;
 
 export class MainScene extends Phaser.Scene {
-    
-    private isPlayer: boolean = true;
+    private boxes: Phaser.GameObjects.Rectangle[][];
+    private board: string[][];
+    private ttt: TTT;
 
     constructor() {
-        super({
-            key: "MainScene"
-        });
+        super({ key: "MainScene" });
     }
     
     init(params: any) {
-        
+        this.board = [
+            ['+', '+', '+'],
+            ['+', '+', '+'],
+            ['+', '+', '+']
+        ]
+        this.ttt = new TTT(BASE_TTT_URL);
     }
     
     preload() {}
@@ -21,7 +27,7 @@ export class MainScene extends Phaser.Scene {
     create() {
         this.createTitle();
         this.createResetButton();
-        this.createBoxes();
+        this.boxes = this.createBoxes();
     }
 
     update(time: number) {}
@@ -38,9 +44,9 @@ export class MainScene extends Phaser.Scene {
                 const x: number = offsetX + BOX_SIZE * i;
                 const y: number = offsetY + BOX_SIZE * j;
                 const box = this.createBox(x, y);
-                box.setInteractive();
-                box.on('pointerdown', this.move(box, j, i), this);
                 row.push(box);
+                box.setInteractive();
+                box.on('pointerdown', this.move(j, i), this);
             }
             boxes.push(row);
         }
@@ -74,18 +80,35 @@ export class MainScene extends Phaser.Scene {
         return rect;
     }
 
-    private createStone(x: number, y: number, isPlayer: boolean = true): Phaser.GameObjects.Arc {
+    private createStone(row: number, col: number, isPlayer: boolean = true): Phaser.GameObjects.Arc {
         const color = isPlayer ? 0x333333 : 0xeeeeee;
-        const stone = this.add.circle(x+30, y+30, (BOX_SIZE - 10) / 2, color); // 謎の30ズレ
+        const box: Phaser.GameObjects.Rectangle = this.boxes[row][col]
+        const stone = this.add.circle(box.x+30, box.y+30, (BOX_SIZE - 10) / 2, color); // 謎の30ズレ
         stone.setStrokeStyle(3, 0x000000);
+        this.board[row][col] = isPlayer ? 'x' : 'o';
         return stone;
     }
 
-    private move(box: Phaser.GameObjects.Rectangle, row: number, col: number): () => void {
+    private move(row: number, col: number): () => void {
         return () => {
-            this.createStone(box.x, box.y, this.isPlayer);
-            box.removeInteractive();
-            this.isPlayer = !this.isPlayer;
+            this.playerMove(row, col);
+            this.enemyMove(this.board);
         }
+    }
+
+    private playerMove(row: number, col: number) {
+        const box = this.boxes[row][col];
+        this.createStone(row, col);
+        box.removeInteractive();
+    }
+
+    private enemyMove(board: string[][]) {
+        this.ttt.bot(board, (data: any) => {
+            console.log(data);
+            const row: number = data['response']['row'] - 1;
+            const col: number = data['response']['col'] - 1;
+            this.createStone(row, col, false);
+            this.boxes[row][col].removeInteractive();
+        });
     }
 }

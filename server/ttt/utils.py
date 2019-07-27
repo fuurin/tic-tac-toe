@@ -1,4 +1,5 @@
 from .types import Player, Point
+from .board import Board
 
 COLS = 'ABCDEFGHIJKLMNOPQRST'
 STONE_TO_CHAR = {
@@ -45,3 +46,15 @@ def point_from_coords(coords):
     col = COLS.index(coords[0]) + 1
     row = int(coords[1:])
     return Point(row=row, col=col)
+
+def board_from_chars(charBoard):
+    board = Board()
+    
+    for col in range(1, 4):
+        for row in range(1, 4):
+            char = charBoard[row-1][col-1]
+            stone = CHAR_TO_STONE[char]
+            point = Point(row=row, col=col)
+            board.place(stone, point)
+
+    return board
