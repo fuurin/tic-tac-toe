@@ -9,6 +9,11 @@ export class MainScene extends Phaser.Scene {
     private boxes: Phaser.GameObjects.Rectangle[][];
     private board: string[][];
     private ttt: TTT;
+    private color = {
+        'x': "#222222",
+        'o': "#fbfbfb",
+        "draw": "#bbbbbb",
+    }
 
     constructor() {
         super({ key: "MainScene" });
@@ -68,7 +73,7 @@ export class MainScene extends Phaser.Scene {
         resetButton.setInteractive();
         resetButton.on('pointerdown', () => {this.scene.start("MainScene")}, this);
         
-        const style = { font: '32px Ariel Bold', fill: 0x11111 };
+        const style = { font: '32px Ariel Bold', fill: 0x111111 };
         const resetButtonText = this.add.text(300, 200, "最初から", style)
         resetButtonText.setOrigin(0.5, 0.5);
         
@@ -105,6 +110,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     private enemyMove(board: string[][]) {
+        this.message("白が考え中…", this.color.o);
         this.ttt.bot(board, (data: any) => {
             this.scene.resume();
 
@@ -117,25 +123,31 @@ export class MainScene extends Phaser.Scene {
             
             if (data["winner"] !== null) {
                 this.finish(data["winner"]);
+            } else {
+                this.message("黒の番です", this.color.x)
             }
         });
     }
 
     private finish(winner: string) {
         const result: any = {
-            "x": ["黒の勝ち！", "#222222"], 
-            "o": ["白の勝ち！", "#fbfbfb"],
-            "draw": ["引き分け！", "#bbbbbb"]
+            "x": ["黒の勝ち！", this.color.x],
+            "o": ["白の勝ち！", this.color.o],
+            "draw": ["引き分け！", this.color.draw]
         }
-        this.titleText.setText(result[winner][0]);
-        const style = { font: '64px Ariel Bold', fill: result[winner][1] }
-        this.titleText.setStyle(style);
-        this.titleText.setStroke("#111111", 3);
+        this.message(result[winner][0], result[winner][1])
         this.boxes.forEach((row) => {
             row.forEach((box) => {
                 box.disableInteractive();
             });
         });
         return
+    }
+
+    private message(text: string, color: string) {
+        this.titleText.setText(text);
+        const style = { font: '64px Ariel Bold', fill: color }
+        this.titleText.setStyle(style);
+        this.titleText.setStroke("#111111", 3);
     }
 }
