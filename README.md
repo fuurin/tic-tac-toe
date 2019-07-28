@@ -28,9 +28,21 @@ $ yarn s
 自動でブラウザが立ち上がり3目並べゲームができる．  
 
 
-デプロイ
+サーバのデプロイ  
 ``` bash
 $ cd server
+$ heroku login
+$ pip freeze > requirements.txt
+$ git init
+$ git remote add heroku https://git.heroku.com/tic-tac-toe-minimax-bot.git
+$ git add .
+$ git commit -m "comment"
+$ git push heroku master
+```
+
+フロントのデプロイ
+``` bash
+$ cd front
 $ yarn build
 $ firebase login
 $ firebase init
@@ -48,3 +60,7 @@ $ firebase deploy
 - Vue-cli 3
 - Webpack 4
 - axios
+  
+ホスティング  
+- Heroku
+- Firebase
