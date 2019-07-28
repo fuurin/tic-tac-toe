@@ -1,6 +1,7 @@
 # 3目並べ
 オープンキャンパスのためにちゃちゃっと作りました．  
 参考: [囲碁ディープラーニングプログラミング](https://www.amazon.co.jp/dp/B07RW5NN1D/ref=dp-kindle-redirect?_encoding=UTF8&btkr=1)  
+完成品: https://tic-tac-toe-456e8.firebaseapp.com/
 
 ## 導入
 ``` bash
@@ -25,6 +26,16 @@ $ yarn s
 ```
   
 自動でブラウザが立ち上がり3目並べゲームができる．  
+
+
+デプロイ
+``` bash
+$ cd server
+$ yarn build
+$ firebase login
+$ firebase init
+$ firebase deploy
+```
 
 # 主な使用技術
 サーバサイド  

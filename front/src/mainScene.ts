@@ -34,7 +34,7 @@ export class MainScene extends Phaser.Scene {
     create() {
         this.messageText = this.createTitle();
         this.createBlackStartButton();
-        this.createWhiteStartButton();
+        // this.createWhiteStartButton();
         this.boxes = this.createBoxes();
 
         if (this.first === "o") {
@@ -50,9 +50,10 @@ export class MainScene extends Phaser.Scene {
     }
 
     private createBlackStartButton(): Phaser.GameObjects.Group {
-        const button = this.add.rectangle(180, 200, 200, 80, 0x999999);
+        const button = this.add.rectangle(300, 200, 200, 80, 0x999999);
         button.setStrokeStyle(3);
-        const text = "黒から"
+        const text = "最初から";
+        // const text = "黒から;"
         const textStyle = { font: '32px Ariel Bold', fill: 0x111111 };
         return this.createButton(() => { 
             this.scene.start("MainScene", {first: "x"});

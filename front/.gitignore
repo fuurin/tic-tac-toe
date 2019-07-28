@@ -1,4 +1,6 @@
 .vscode/
 .DS_Store
 node_modules/
+dist/app.js
 yarn.lock
+.firebase/
