@@ -1,0 +1,5 @@
+.vscode/
+.DS_Dtore
+__pycache__/
+.venv/
+.vscode/

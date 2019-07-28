@@ -10,15 +10,16 @@ $ cd tic-tac-toe
 
 まずはサーバを起動する必要がある
 ``` bash
+$ cd server
 $ python -m venv .venv
 $ source .venv/bin/activate もしくは .venv\\Scripts\\activate
 $ pip install -r requirements.txt
-$ python -m server.app
+$ python app.py
 ```
   
 続いてフロントエンド  
 ``` bash
-$ cd front
+$ cd ../front
 $ yarn
 $ yarn s
 ```

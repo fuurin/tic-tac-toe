@@ -1,15 +1,19 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from .ttt.board import GameState, Player
-from .ttt.utils import board_from_chars, chars_from_board
-from .ttt.utils import winner_char
-from .ttt.agent import MinimaxAgent
+from ttt.board import GameState, Player
+from ttt.utils import board_from_chars, chars_from_board
+from ttt.utils import winner_char
+from ttt.agent import MinimaxAgent
 import json
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 app.config["JSON_SORT_KEYS"] = False
 CORS(app)
+
+@app.route('/')
+def root():
+    return "Hi! This is tic-tac-toe bot server!"
 
 @app.route('/bot')
 def bot():
@@ -60,4 +64,4 @@ def bot():
     return jsonify(result)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)

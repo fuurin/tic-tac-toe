@@ -1,11 +1,13 @@
 import "phaser"
 import { TTT } from "./ttt";
 
-const BASE_TTT_URL: string = "http://127.0.0.1:5000";
+const BASE_TTT_URL: string = "https://tic-tac-toe-minimax-bot.herokuapp.com/";
+// const BASE_TTT_URL: string = "http://127.0.0.1:5000";
 const BOX_SIZE: number = 130;
 
 export class MainScene extends Phaser.Scene {
-    private titleText: Phaser.GameObjects.Text;
+    private messageText: Phaser.GameObjects.Text;
+    private first: string;
     private boxes: Phaser.GameObjects.Rectangle[][];
     private board: string[][];
     private ttt: TTT;
@@ -26,17 +28,60 @@ export class MainScene extends Phaser.Scene {
             ['+', '+', '+']
         ]
         this.ttt = new TTT(BASE_TTT_URL);
+        this.first = params["first"] || "x";
     }
-    
-    preload() {}
 
     create() {
-        this.titleText = this.createTitle();
-        this.createResetButton();
+        this.messageText = this.createTitle();
+        this.createBlackStartButton();
+        this.createWhiteStartButton();
         this.boxes = this.createBoxes();
+
+        if (this.first === "o") {
+            this.enemyMove(this.board);
+        }
     }
 
-    update(time: number) {}
+    private createTitle(): Phaser.GameObjects.Text {
+        const style = { font: '64px Ariel Bold', fill: 0xfbfbac };
+        const title = this.add.text(300, 80, "AI 三目並べ", style);
+        title.setOrigin(0.5, 0.5);
+        return title
+    }
+
+    private createBlackStartButton(): Phaser.GameObjects.Group {
+        const button = this.add.rectangle(180, 200, 200, 80, 0x999999);
+        button.setStrokeStyle(3);
+        const text = "黒から"
+        const textStyle = { font: '32px Ariel Bold', fill: 0x111111 };
+        return this.createButton(() => { 
+            this.scene.start("MainScene", {first: "x"});
+        }, button, text, textStyle)
+    }
+
+    private createWhiteStartButton(): Phaser.GameObjects.Group {
+        const button = this.add.rectangle(420, 200, 200, 80, 0xfbfbfb);
+        button.setStrokeStyle(3);
+        const text = "白から"
+        const textStyle = { font: '32px Ariel Bold', fill: 0x111111 };
+        return this.createButton(() => { 
+            this.scene.start("MainScene", {first: "o"});
+        }, button, text, textStyle)
+    }
+
+    private createButton(callback: () => void, shape: Phaser.GameObjects.Shape, text: string, textStyle?: any): Phaser.GameObjects.Group {
+        shape.setInteractive();
+        shape.on('pointerdown', callback, this);
+        const buttonText = this.add.text(shape.x, shape.y, text, textStyle);
+        buttonText.setOrigin(0.5, 0.5);
+        return new Phaser.GameObjects.Group(this, [shape, buttonText]);
+    }
+
+    private createBox(x: number, y: number): Phaser.GameObjects.Rectangle {
+        const rect = this.add.rectangle(x, y, BOX_SIZE, BOX_SIZE, 0xfbfbac);
+        rect.setStrokeStyle(5, 0x111111);
+        return rect;
+    }
 
     private createBoxes(): Phaser.GameObjects.Rectangle[][] {
         const diff = this.game.canvas.height - this.game.canvas.width;
@@ -60,32 +105,6 @@ export class MainScene extends Phaser.Scene {
         return boxes;
     }
 
-    private createTitle(): Phaser.GameObjects.Text {
-        const style = { font: '64px Ariel Bold', fill: 0xfbfbac };
-        const title = this.add.text(300, 80, "AI 三目並べ", style);
-        title.setOrigin(0.5, 0.5);
-        return title
-    }
-
-    private createResetButton(): Phaser.GameObjects.Rectangle {
-        const resetButton = this.add.rectangle(300, 200, 250, 80, 0xaaaaaa);
-        resetButton.setStrokeStyle(5, 0x111111);
-        resetButton.setInteractive();
-        resetButton.on('pointerdown', () => {this.scene.start("MainScene")}, this);
-        
-        const style = { font: '32px Ariel Bold', fill: 0x111111 };
-        const resetButtonText = this.add.text(300, 200, "最初から", style)
-        resetButtonText.setOrigin(0.5, 0.5);
-        
-        return resetButton;
-    }
-
-    private createBox(x: number, y: number): Phaser.GameObjects.Rectangle {
-        const rect = this.add.rectangle(x, y, BOX_SIZE, BOX_SIZE, 0xfbfbac);
-        rect.setStrokeStyle(5, 0x111111);
-        return rect;
-    }
-
     private createStone(row: number, col: number, isPlayer: boolean = true): Phaser.GameObjects.Arc {
         const color = isPlayer ? 0x333333 : 0xeeeeee;
         const box: Phaser.GameObjects.Rectangle = this.boxes[row][col]
@@ -106,10 +125,10 @@ export class MainScene extends Phaser.Scene {
         const box = this.boxes[row][col];
         this.createStone(row, col, true);
         box.removeInteractive();
-        this.scene.pause();
     }
 
     private enemyMove(board: string[][]) {
+        this.scene.pause();
         this.message("白が考え中…", this.color.o);
         this.ttt.bot(board, (data: any) => {
             this.scene.resume();
@@ -145,9 +164,9 @@ export class MainScene extends Phaser.Scene {
     }
 
     private message(text: string, color: string) {
-        this.titleText.setText(text);
+        this.messageText.setText(text);
         const style = { font: '64px Ariel Bold', fill: color }
-        this.titleText.setStyle(style);
-        this.titleText.setStroke("#111111", 3);
+        this.messageText.setStyle(style);
+        this.messageText.setStroke("#111111", 3);
     }
 }
