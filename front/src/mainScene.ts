@@ -92,7 +92,6 @@ export class MainScene extends Phaser.Scene {
 
     private move(row: number, col: number): () => void {
         return () => {
-            this
             this.playerMove(row, col);
             this.enemyMove(this.board);
         }
@@ -108,13 +107,10 @@ export class MainScene extends Phaser.Scene {
     private enemyMove(board: string[][]) {
         this.ttt.bot(board, (data: any) => {
             this.scene.resume();
-            
-            console.log(data);
-            console.log(this.board);
 
             if (data["winner"] === null || data["winner"] === "o") {
-                const row: number = data['response']['row'] - 1;
-                const col: number = data['response']['col'] - 1;
+                const row: number = data['response']['row'];
+                const col: number = data['response']['col'];
                 this.createStone(row, col, false);
                 this.boxes[row][col].removeInteractive();
             }
