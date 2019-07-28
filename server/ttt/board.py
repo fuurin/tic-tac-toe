@@ -31,6 +31,7 @@ class Board:
     def place(self, player, point):
         assert self.is_on_grid(point)
         assert self._grid.get(point) is None
+        if player is None: return
         self._grid[point] = player
 
     @staticmethod
@@ -44,7 +45,8 @@ class Board:
         Returns None if the point is empty, or a Player if there is a
         stone on that point.
         """
-        return self._grid.get(point)        
+        return self._grid.get(point)
+
 
 class Move:
     def __init__(self, point):
@@ -116,9 +118,7 @@ class GameState:
 
     def winner(self):
         if self._has_3_in_a_row(Player.x):
-            return "x"
+            return Player.x
         if self._has_3_in_a_row(Player.o):
-            return "o"
-        if self.is_over():
-            return "draw"
+            return Player.o
         return None

@@ -5,6 +5,7 @@ const BASE_TTT_URL: string = "http://127.0.0.1:5000";
 const BOX_SIZE: number = 130;
 
 export class MainScene extends Phaser.Scene {
+    private titleText: Phaser.GameObjects.Text;
     private boxes: Phaser.GameObjects.Rectangle[][];
     private board: string[][];
     private ttt: TTT;
@@ -25,7 +26,7 @@ export class MainScene extends Phaser.Scene {
     preload() {}
 
     create() {
-        this.createTitle();
+        this.titleText = this.createTitle();
         this.createResetButton();
         this.boxes = this.createBoxes();
     }
@@ -91,6 +92,7 @@ export class MainScene extends Phaser.Scene {
 
     private move(row: number, col: number): () => void {
         return () => {
+            this
             this.playerMove(row, col);
             this.enemyMove(this.board);
         }
@@ -100,16 +102,44 @@ export class MainScene extends Phaser.Scene {
         const box = this.boxes[row][col];
         this.createStone(row, col, true);
         box.removeInteractive();
+        this.scene.pause();
     }
 
     private enemyMove(board: string[][]) {
         this.ttt.bot(board, (data: any) => {
+            this.scene.resume();
+            
             console.log(data);
             console.log(this.board);
-            const row: number = data['response']['row'] - 1;
-            const col: number = data['response']['col'] - 1;
-            this.createStone(row, col, false);
-            this.boxes[row][col].removeInteractive();
+
+            if (data["winner"] === null || data["winner"] === "o") {
+                const row: number = data['response']['row'] - 1;
+                const col: number = data['response']['col'] - 1;
+                this.createStone(row, col, false);
+                this.boxes[row][col].removeInteractive();
+            }
+            
+            if (data["winner"] !== null) {
+                this.finish(data["winner"]);
+            }
         });
+    }
+
+    private finish(winner: string) {
+        const result: any = {
+            "x": ["黒の勝ち！", "#222222"], 
+            "o": ["白の勝ち！", "#fbfbfb"],
+            "draw": ["引き分け！", "#bbbbbb"]
+        }
+        this.titleText.setText(result[winner][0]);
+        const style = { font: '64px Ariel Bold', fill: result[winner][1] }
+        this.titleText.setStyle(style);
+        this.titleText.setStroke("#111111", 3);
+        this.boxes.forEach((row) => {
+            row.forEach((box) => {
+                box.disableInteractive();
+            });
+        });
+        return
     }
 }
