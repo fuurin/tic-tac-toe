@@ -47,7 +47,7 @@ def bot():
     point = move.point
     game = game.apply_move(move)
     response = {
-        "row": range(3)[::-1][point.row-1],
+        "row": point.row - 1,
         "col": point.col - 1,
         "board": chars_from_board(game.board)
     }

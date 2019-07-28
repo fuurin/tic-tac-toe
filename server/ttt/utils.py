@@ -36,17 +36,17 @@ def board_from_chars(char_board):
                 raise ValueError
 
             stone = CHAR_TO_STONE[char]
-            point = Point(row=range(3,0,-1)[row], col=col+1)
+            point = Point(row=row+1, col=col+1)
             board.place(stone, point)
 
     return board
 
 def chars_from_board(board):
     plane = []
-    for row in range(board.num_rows, 0, -1):
+    for row in range(board.num_rows):
         line = []
-        for col in range(1, board.num_cols + 1):
-            stone = board.get(Point(row=row, col=col))
+        for col in range(board.num_cols):
+            stone = board.get(Point(row=row+1, col=col+1))
             line.append(STONE_TO_CHAR[stone])
         plane.append(line)
     return plane
