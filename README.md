@@ -41,16 +41,17 @@ $ git push heroku master
 ```
 
 AWSサーバへのデプロイはgit経由
-80番ポートをHTTPで開けておく
+443番ポートをHTTPSで開けておく
+サーバをSSL化しつつ，
 ``` bash
 $ export FLASK_APP=~/tic-tac-toe/server/app.py
-$ flask run --host='0.0.0.0' --port='80' --with-threads --no-debugger >> log.txt &
+$ sudo flask run --host='0.0.0.0' --port 443 --cert ~/openssl/server.crt --key ~/openssl/server.key --with-threads --no-debugger &
 ```
 
 停止する時は
 ``` bash
-$ ps -a
-$ kill -9 flaskのPID
+$ ps aux | grep python
+$ sudo kill -9 flaskのPID
 ```
 
 firebaseへのフロントのデプロイ
@@ -60,6 +61,8 @@ $ yarn build
 $ firebase login
 $ firebase init
 $ firebase deploy
+ダメなら
+$ firebase login --reauth
 ```
 
 # 主な使用技術

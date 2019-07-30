@@ -1,8 +1,9 @@
 import "phaser"
 import { TTT } from "./ttt";
 
-// const BASE_TTT_URL: string = "https://tic-tac-toe-minimax-bot.herokuapp.com/";
-const BASE_TTT_URL: string = "http://127.0.0.1:5000";
+// const BASE_TTT_URL: string = "https://tic-tac-toe-minimax-bot.herokuapp.com";
+// const BASE_TTT_URL: string = "http://127.0.0.1:5000";
+const BASE_TTT_URL: string = "https://ec2-13-231-153-205.ap-northeast-1.compute.amazonaws.com"
 const BOX_SIZE: number = 130;
 
 export class MainScene extends Phaser.Scene {
