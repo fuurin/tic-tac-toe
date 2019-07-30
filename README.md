@@ -28,7 +28,7 @@ $ yarn s
 自動でブラウザが立ち上がり3目並べゲームができる．  
 
 
-サーバのデプロイ  
+herokuサーバのデプロイ  
 ``` bash
 $ cd server
 $ heroku login
@@ -40,7 +40,14 @@ $ git commit -m "comment"
 $ git push heroku master
 ```
 
-フロントのデプロイ
+AWSサーバへのデプロイはgit経由
+80番ポートをHTTPで開けておく
+``` bash
+$ export FLASK_APP=~/tic-tac-toe/server/app.py
+$ flask run --host='0.0.0.0' --port='80' --with-threads --no-debugger >> log.txt &
+```
+
+firebaseへのフロントのデプロイ
 ``` bash
 $ cd front
 $ yarn build
