@@ -47,6 +47,12 @@ $ export FLASK_APP=~/tic-tac-toe/server/app.py
 $ flask run --host='0.0.0.0' --port='80' --with-threads --no-debugger >> log.txt &
 ```
 
+停止する時は
+``` bash
+$ ps -a
+$ kill -9 flaskのPID
+```
+
 firebaseへのフロントのデプロイ
 ``` bash
 $ cd front
