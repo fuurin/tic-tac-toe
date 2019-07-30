@@ -65,7 +65,4 @@ def bot():
     return jsonify(result)
 
 if __name__ == "__main__":
-    if environ.get("FLASK_PRODUCTION"):
-        app.run(host='0.0.0.0', port=80, threaded=True, debug=False)
-    else:
-        app.run(debug=True)
+    app.run(debug=True)
