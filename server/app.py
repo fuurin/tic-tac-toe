@@ -4,6 +4,7 @@ from ttt.board import GameState, Player
 from ttt.utils import board_from_chars, chars_from_board
 from ttt.utils import winner_char
 from ttt.agent import MinimaxAgent
+from os import environ
 import json
 
 app = Flask(__name__)
@@ -64,4 +65,7 @@ def bot():
     return jsonify(result)
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    if environ.get("FLASK_PRODUCTION"):
+        app.run(host='0.0.0.0', port=80, threaded=True, debug=False)
+    else:
+        app.run(debug=True)
